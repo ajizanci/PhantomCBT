@@ -1,0 +1,21 @@
+{% load static %}
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+    <title>Login</title>
+  </head>
+  <body>
+    <div class="center-container">
+      <div class="form-container card">
+        <form style="margin-bottom: 10px;" action="{% url 'user:login' %}" method="POST">
+          {% csrf_token %} {{ form }}
+          <button style="width: 100%;" class="button red block" type="submit">Login</button>
+        </form>
+        <a class="button blue block" href="{% url 'user:register' %}">Register</a>
+      </div>
+    </div>
+  </body>
+</html>

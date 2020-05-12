@@ -1,0 +1,39 @@
+{% load static %}
+
+{% extends 'user/auth/layout.html' %}
+
+{% block body%}
+<div class="center-container" style="align-items: flex-start;">
+{% for exam in examinations %}
+    <div class="exam card">
+        <div class="body">
+            <h2>{{ exam.name }}</h2>
+            <p class="status">
+                {% if exam.status %}
+                <span class="green">Taken</span>
+                {% else %}
+                <span class="red">Not Taken</span>
+                {% endif %}
+            </p>
+        </div>
+        <div style="display: none;" class="controls">
+            <button class="button red">View Students</button>
+            <button class="button blue">View Questions</button>
+        </div>
+    </div>
+{% endfor %}
+    <div class="exam card" id="create-exam">
+        <a href="{% url 'user:add' %}" class="block button">
+    Add Examination</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'examination/vue.js' %}"></script>
+<script>
+    // new Vue({
+
+    // })
+</script>
+{% endblock %}

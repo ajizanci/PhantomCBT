@@ -1,0 +1,47 @@
+{% extends 'user/auth/layout.html' %}
+{% load static %}
+{% block body %}
+
+<div class="center-container" style="align-items: flex-start;">
+  <div style="width: 600px; padding: 10px;" class="card">
+    {% if errors %}
+    <ul class="errorlist">
+      {% for error in errors %}
+      <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    <form action="{% url 'user:add' %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <label for="ename">Examination name:</label>
+      <input type="text" id="ename" name="examination_name" required/>
+
+      <label for="duration">Duration:</label>
+      <input type="number" name="duration" id="duration" required/>
+
+      <label for="nq">Number of questions per test:</label>
+      <input type="number" name="num_questions" id="nq" required/>
+
+      <label for="date">Date:</label>
+      <input type="date" id="date" name="date" required/>
+
+      <label for="upfile">
+        Upload an excel workbook containing two sheets: one for the students and
+        another for the questions, named "Students" and "Questions" respectively.
+        The format should be exactly like the images below.
+      </label>
+      <img width="580px" src="{% static 'format-1.jpg' %}" alt="Sheet: Students" />
+      <img width="580px" src="{% static 'format-2.jpg' %}" alt="Sheet: Questions" />
+      <input type="file" name="students_and_questions" id="upfile" required/>
+      <button
+        type="submit"
+        style="display: block; width: 100%;"
+        class="button red"
+      >
+        Add Exam
+      </button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

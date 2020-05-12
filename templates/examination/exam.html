@@ -1,0 +1,90 @@
+{% load static %}
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+    <link rel="stylesheet" href="{% static 'examination/style.css' %}" />
+    <title>Ongoing Examination</title>
+  </head>
+  <body>
+    <main>
+      <input type="hidden" value="{{ student_id }}" id="std">
+      <input type="hidden" value="{{ examination_id }}" id="eid">
+      <p id="csrf">{% csrf_token %}</p>
+      <div v-if="!!questions.length" id="app">
+        <section>
+          <div class="card" id="asker">
+            <question
+              v-for="(question, i) in questions"
+              :key="i"
+              :question="question"
+              @select-option="chooseAnswer"
+              v-bind:number="i + 1"
+              v-show="i == currentQuestion"
+            ></question>
+            <div id="controls">
+              <button
+                class="button red"
+                @click="move(-1)"
+                v-if="currentQuestion > 0"
+              >
+                Previous
+              </button>
+              <button
+                class="button red"
+                @click="move(1)"
+                v-if="currentQuestion < numQuestions - 1"
+              >
+                Next
+              </button>
+              <button
+                class="button blue"
+                v-if="currentQuestion == numQuestions - 1"
+                v-on:click="confirmSubmit"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </section>
+        <div id="aside">
+          <timer v-if="ongoing" :callback="submit" :hours="duration"></timer>
+          <span id="timer" v-else>00:00:00</span>
+          <div id="goto-tiles">
+            <span
+              v-for="(_, i) in questions"
+              :key="i"
+              :class="gotoButton(i)"
+              @click="move(i - currentQuestion)"
+            >
+              ${ i + 1 }</span
+            >
+          </div>
+          <div id="progress">
+            <p>
+              You have answered ${ answered } out of ${ numQuestions }
+              questions.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div v-if="showPop" id="pop">
+        <p id="pop-text">
+          ${ popText }
+          <button class="button blue" v-if="notStarted" @click="start">
+            Start Test
+          </button>
+          <span id="confirm" v-if="confirmSub">
+            <button class="button blue" @click="submit">Yes</button>
+            <button class="button red" @click="showPop = false">No</button>
+          </span>
+        </p>
+      </div>
+    </main>
+    <script src="{% static 'examination/vue.js' %}"></script>
+    <script src="{% static 'examination/components.js' %}"></script>
+    <script src="{% static 'examination/app.js' %}"></script>
+  </body>
+</html>

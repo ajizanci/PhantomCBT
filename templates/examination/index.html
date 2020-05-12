@@ -1,0 +1,21 @@
+{% load static %}
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+    <link rel="stylesheet" href="{% static 'examination/estyles.css' %}" />
+    <title>Login to an Examination</title>
+  </head>
+  <body>
+    <div class="center-container">
+      <div class="form-container card">
+        <form action="{% url 'examination:index' %}" method="POST">
+          {% csrf_token %} {{ form }}
+          <button style="width: 100%;" class="button red block" type="submit">Goto Examination</button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

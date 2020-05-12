@@ -1,0 +1,22 @@
+{% load static %}
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+    <title>CBT</title>
+  </head>
+  <body>
+    <div class="center-container">
+      <div class="form-container card">
+        <a class="button red block"
+          style="width: 275px; margin-bottom: 10px;"
+          href="{% url 'examination:index' %}">
+          Student
+        </a>
+        <a class="button blue block" style="width: 275px;" href="{% url 'user:login' %}">Examiner</a>
+      </div>
+    </div>
+  </body>
+</html>
