@@ -1,5 +1,33 @@
 {% extends 'user/auth/layout.html' %}
 
 {% block body %}
-<h1>Questions</h1>
+<div class="center-container">
+  <div style="width: 700px; align-self: flex-start;" class="card">
+    <table class="table table-bordered" >
+      <caption>{{ request.user.username }} > {{ examination }} > Questions</caption>
+      <thead>
+        <tr>
+          <th>Question</th>
+          <th>Options</th>
+          <th>Correct Option</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for question in questions %}
+        <tr>
+          <td>{{ question.content }}</td>
+          <td>
+            <ul class="options">
+            {% for option in question.options %}
+              <li class="option">{{ option.option_content }}</li>
+            {% endfor %}
+            </ul>
+          </td>
+          <td>{{ question.correct_option }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}

@@ -1,11 +1,12 @@
-{% load static %}
 
 {% extends 'user/auth/layout.html' %}
+{% load static %}
+
 
 {% block body%}
-<div class="center-container" style="align-items: flex-start;">
+<div class="center-container" style="align-items: flex-start; flex-wrap: wrap;">
 {% for exam in examinations %}
-    <div class="exam card">
+    <div style="display: flex;" class="exam card">
         <div class="body">
             <h2>{{ exam.name }}</h2>
             <p class="status">
@@ -16,9 +17,9 @@
                 {% endif %}
             </p>
         </div>
-        <div style="display: none;" class="controls">
-            <button class="button red">View Students</button>
-            <button class="button blue">View Questions</button>
+        <div class="controls">
+            <a href="{% url 'user:students' %}?examination={{ exam.id }}" class="button red">View Students</a>
+            <a href="{% url 'user:questions' %}?examination={{ exam.id }}"class="button blue">View Questions</a>
         </div>
     </div>
 {% endfor %}
@@ -27,13 +28,4 @@
     Add Examination</a>
     </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script src="{% static 'examination/vue.js' %}"></script>
-<script>
-    // new Vue({
-
-    // })
-</script>
 {% endblock %}

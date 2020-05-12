@@ -6,7 +6,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 from .forms import LoginForm, RegisterForm
 from examination.exceloptr import create_students, create_questions
-from examination.models import Examination
+from examination.models import Examination, Question, Student, Option
 # Create your views here.
 def index(request):
     return render(request, 'user/index.html')
@@ -88,10 +88,43 @@ def dashboard(request, username):
         return HttpResponseRedirect(reverse("user:login"))
 
 def questions_view(request):
-    return render(request, 'user/auth/questions.html')
+    if request.user.is_authenticated:
+        eid = int(request.GET["examination"])
+        try:
+            examination = request.user.examinations.get(pk=eid)
+            questions = Question.objects.filter(examination=examination)
+            qs = []
+            for question in questions:
+                q = {'content': question.content, 'options': []}
+                for option in Option.objects.filter(question=question):
+                    if option.is_correct:
+                        q["correct_option"] = option.option_content
+                    q["options"].append({'option_content': option.option_content})
+                qs.append(q)
+            
+            return render(request, 'user/auth/questions.html', {'examination': examination.name, 'questions': qs})
+        except:
+            return HttpResponseRedirect(reverse("user:login"))
+        
+    else:
+        return HttpResponseRedirect(reverse("user:login"))
 
 def students_view(request):
-    return render(request, 'user/auth/students.html')
+    if request.user.is_authenticated:
+        eid = int(request.GET["examination"])
+        try:
+            examination = request.user.examinations.get(pk=eid)
+            students = Student.objects.filter(examination=examination)
+            return render(request, 'user/auth/students.html', {
+                'examination': examination.name,
+                'students': students
+            })
+        except:
+            return HttpResponseRedirect(reverse("user:login"))
+            
+    else:
+        return HttpResponseRedirect(reverse("user:login"))
+
 
 def logoutu(request):
     logout(request)

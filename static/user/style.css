@@ -8,7 +8,8 @@ header {
   align-items: center;
 }
 header h1 {
-    text-transform: uppercase;
+  text-transform: uppercase;
+  font-size: 18pt;
 }
 #username,
 #logout {
@@ -18,7 +19,6 @@ header h1 {
 div.exam {
   width: 250px;
   height: 250px;
-  cursor: pointer;
 }
 p.status {
   font-size: 10pt;
@@ -40,19 +40,33 @@ span.red {
   box-shadow: 0px 0px 0px 0px;
   background: none;
 }
-.controls,
 .body {
-  width: 100%;
-  height: 100%;
+  flex-grow: 1;
   display: flex;
-}
-.body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 .controls {
-  justify-content: space-around;
+  height: 60px;
+  display: flex;
   background-color: black;
-  opacity: 0.9;
+  opacity: 0.98;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.controls a {
+  display: block;
+  font-size: 9pt;
+  width: 100px;
+  margin: 10px;
+}
+table.table {
+margin-bottom: 0px;font-size: 11pt; border-radius: 4px;
+}
+caption {
+caption-side: top; padding: 15px
+}
+.hidden {
+  display: none;
 }
