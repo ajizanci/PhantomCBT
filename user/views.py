@@ -4,6 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
+import os
+import cbt.settings as settings
 from .forms import LoginForm, RegisterForm
 from examination.exceloptr import create_students, create_questions
 from examination.models import Examination, Question, Student, Option
@@ -67,7 +69,7 @@ class AddExamination(View):
             set_date=date,
             num_questions=num_questions)
         
-        file_path = f"./static/upfiles/{request.user.username}.xlsx"
+        file_path = os.path.join(settings.STATIC_ROOT, 'upfiles', request.user.username)
         
         with open(file_path, 'wb+') as dest:
             for chunk in students_and_questions.chunks():
