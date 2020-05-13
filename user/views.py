@@ -69,7 +69,7 @@ class AddExamination(View):
             set_date=date,
             num_questions=num_questions)
         
-        file_path = os.path.join(settings.STATIC_ROOT, 'upfiles', f"{request.user.username}.xlsx")
+        file_path = os.path.join(settings.STATIC_ROOT, f"{request.user.username}.xlsx")
         
         try:
             with open(file_path, 'wb+') as dest:

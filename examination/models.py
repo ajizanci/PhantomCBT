@@ -26,7 +26,10 @@ class Examination(models.Model):
     
     @property
     def status(self):
-        scores = map(lambda x: x.score, self.students.all())
+        if len(self.students.all()) == 0:
+            return False
+        
+        scores = map(lambda x: x.score is not None, self.students.all())
         return all(scores)
     
     def mark(self, answers):
