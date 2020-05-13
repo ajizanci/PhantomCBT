@@ -69,17 +69,19 @@ class AddExamination(View):
             set_date=date,
             num_questions=num_questions)
         
-        file_path = os.path.join(settings.STATIC_ROOT, 'upfiles', request.user.username)
+        file_path = os.path.join(settings.STATIC_ROOT, 'upfiles', f"{request.user.username}.xlsx")
         
-        with open(file_path, 'wb+') as dest:
-            for chunk in students_and_questions.chunks():
-                dest.write(chunk)
-        
-        if (create_questions(file_path, exam) and create_students(file_path, exam)):
-            return HttpResponseRedirect(reverse("user:dashboard", kwargs={'username': request.user.username}))
+        try:
+            with open(file_path, 'wb+') as dest:
+                for chunk in students_and_questions.chunks():
+                    dest.write(chunk)
+            
+            if (create_questions(file_path, exam) and create_students(file_path, exam)):
+                return HttpResponseRedirect(reverse("user:dashboard", kwargs={'username': request.user.username}))
 
-        exam.delete()
-        return render(request, 'user/auth/add-exam.html', {'errors': ['An error occured while processing the workbook']})
+        except:
+            exam.delete()
+            return render(request, 'user/auth/add-exam.html', {'errors': ['An error occured while processing the workbook']})
 
 def dashboard(request, username):
     if request.user.is_authenticated and request.user.username == username:
