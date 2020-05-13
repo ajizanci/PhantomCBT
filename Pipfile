@@ -10,6 +10,9 @@ autopep8 = "*"
 django = "*"
 openpyxl = "*"
 djangorestframework = "*"
+gunicorn = "*"
+dj-database-url = "*"
+whitenoise = "*"
 
 [requires]
 python_version = "3.8"
