@@ -16,8 +16,8 @@
       <label for="ename">Examination name:</label>
       <input type="text" id="ename" name="examination_name" required/>
 
-      <label for="duration">Duration:</label>
-      <input type="number" name="duration" id="duration" required/>
+      <label for="duration">Duration (in hours):</label>
+      <input type="number" name="duration" min="0" step="0.01" id="duration" required/>
 
       <label for="nq">Number of questions per test:</label>
       <input type="number" name="num_questions" id="nq" required/>

@@ -70,3 +70,7 @@ caption-side: top; padding: 15px
 .hidden {
   display: none;
 }
+span.goto-tile.selected {
+  background-color: #ebf738;
+  font-weight: bold;
+}
