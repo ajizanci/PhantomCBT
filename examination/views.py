@@ -21,7 +21,6 @@ def submit_exam_view(request):
     if request.method == 'POST':
         serializer = AnswerSheetSerializer(data=request.data)
         if serializer.is_valid():
-            print(serializer.validated_data)
             try:
                 exam = Examination.objects.get(pk=serializer.validated_data["examination_id"])
                 score = exam.mark(serializer.validated_data["answers"])

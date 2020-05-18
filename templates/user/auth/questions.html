@@ -18,12 +18,12 @@
           <td>{{ question.content }}</td>
           <td>
             <ul class="options">
-            {% for option in question.options %}
+            {% for option in question.options.all %}
               <li class="option">{{ option.option_content }}</li>
             {% endfor %}
             </ul>
           </td>
-          <td>{{ question.correct_option }}</td>
+          <td>{{ question.correct_option.option_content }}</td>
         </tr>
       {% endfor %}
       </tbody>

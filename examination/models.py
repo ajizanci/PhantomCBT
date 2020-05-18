@@ -61,6 +61,10 @@ class Question(models.Model):
 
     def __str__(self):
         return self.content
+    
+    @property
+    def correct_option(self):
+        return self.options.get(is_correct=True)
 
 class Option(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='options')

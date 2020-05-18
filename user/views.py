@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.views.generic import View
+from django.shortcuts import render, get_object_or_404
+from django.views.generic import View, ListView
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth import login, logout, authenticate
@@ -83,53 +83,39 @@ class AddExamination(View):
             exam.delete()
             return render(request, 'user/auth/add-exam.html', {'errors': ['An error occured while processing the workbook']})
 
-def dashboard(request, username):
-    if request.user.is_authenticated and request.user.username == username:
-        return render(request, 'user/auth/dashboard.html', {
-            'examinations': request.user.examinations.all()
-         })
-    else:
-        return HttpResponseRedirect(reverse("user:login"))
+class ExaminationsListView(ListView):
+    template_name = 'user/auth/dashboard.html'
+    context_object_name = 'examinations'
+    
+    def get_queryset(self):
+        return self.request.user.examinations.all()
 
-def questions_view(request):
-    if request.user.is_authenticated:
-        eid = int(request.GET["examination"])
-        try:
-            examination = request.user.examinations.get(pk=eid)
-            questions = Question.objects.filter(examination=examination)
-            qs = []
-            for question in questions:
-                q = {'content': question.content, 'options': []}
-                for option in Option.objects.filter(question=question):
-                    if option.is_correct:
-                        q["correct_option"] = option.option_content
-                    q["options"].append({'option_content': option.option_content})
-                qs.append(q)
-            
-            return render(request, 'user/auth/questions.html', {'examination': examination.name, 'questions': qs})
-        except:
-            return HttpResponseRedirect(reverse("user:login"))
-        
-    else:
-        return HttpResponseRedirect(reverse("user:login"))
+class StudentsListView(ListView):
+    context_object_name = 'students'
+    template_name = 'user/auth/students.html'
+    
+    def get_queryset(self):
+        self.examination = get_object_or_404(Examination, examiner=self.request.user, id=int(self.request.GET["examination"]))
+        return Student.objects.filter(examination=self.examination)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["examination"] = self.examination.name
+        return context
 
-def students_view(request):
-    if request.user.is_authenticated:
-        eid = int(request.GET["examination"])
-        try:
-            examination = request.user.examinations.get(pk=eid)
-            students = Student.objects.filter(examination=examination)
-            return render(request, 'user/auth/students.html', {
-                'examination': examination.name,
-                'students': students
-            })
-        except:
-            return HttpResponseRedirect(reverse("user:login"))
-            
-    else:
-        return HttpResponseRedirect(reverse("user:login"))
-
-
+class QuestionsListView(ListView):
+    context_object_name = 'questions'
+    template_name = 'user/auth/questions.html'
+    
+    def get_queryset(self):
+        self.examination = get_object_or_404(Examination, examiner=self.request.user, id=int(self.request.GET["examination"]))
+        return Question.objects.filter(examination=self.examination)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["examination"] = self.examination.name
+        return context
+    
 def logoutu(request):
     logout(request)
     return HttpResponseRedirect(reverse("user:login"))
