@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Examination, Question, Option
+from django.contrib.auth.models import User
+from examination.models import Examination, Question, Option
 
 
 class AnswerSerializer(serializers.Serializer):
@@ -16,6 +17,15 @@ class OptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Option
         fields = ['id', 'option_content']
+        
+class StudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name']
+     
+class AddStudentsSerializer(serializers.Serializer):
+    examination_id = serializers.IntegerField()
+    students = StudentSerializer(many=True)
         
 class QuestionSerializer(serializers.ModelSerializer):
     options = OptionSerializer(many=True, read_only=True)

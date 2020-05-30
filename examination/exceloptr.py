@@ -64,7 +64,6 @@ def get_questions_from_sheet(sheet):
         content = sheet["A" + str(row)].value
         options = map(lambda x: x.strip(), sheet["B" + str(row)].value.split(","))
         correct_option = str(sheet["C" + str(row)].value).strip()
-        print(correct_option)
         questions.append({
             'content': content,
             'options': options,

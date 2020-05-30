@@ -4,35 +4,13 @@ from django.views.generic import View
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse
 from django.contrib.auth.models import User
-from rest_framework import generics
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from .models import Examination
 from user.models import Profile
 from .forms import ExamLoginForm
 from .exceloptr import create_students, create_questions
-from .serializers import ExamSerializer, AnswerSheetSerializer
 from datetime import datetime
 
 # Create your views here.
-class QuestionsView(generics.RetrieveAPIView):
-    queryset = Examination.objects.all()
-    serializer_class = ExamSerializer
-    
-@api_view(['POST'])
-def submit_exam_view(request):
-    if request.method == 'POST':
-        serializer = AnswerSheetSerializer(data=request.data)
-        if serializer.is_valid():
-            exam = Examination.objects.get(pk=int(serializer.validated_data["examination_id"]))
-            score = exam.mark(serializer.validated_data["answers"])
-            student = User.objects.get(id=int(serializer.validated_data["student_id"]))
-            student.profile.score = score
-            student.profile.save()
-            return Response({'success': True})    
-        
-        return Response({'success': False, 'err': serializer.errors})  
-
 class ExamLoginView(View):
     def get(self, request):
         return render(request, 'examination/index.html', {'form': ExamLoginForm()})

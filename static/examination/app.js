@@ -49,7 +49,7 @@ new Vue({
       this.ongoing = false
       this.confirmSub = false
       this.popText = "Submitting your answers..."
-      fetch('/examination/submit', {
+      fetch('/api/examination/submit', {
         credentials: 'same-origin',
         headers: {
           'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ new Vue({
     }
   },
   mounted () {
-    fetch(`/examination/${this.eid}?format=json`)
+    fetch(`/api/examination/${this.eid}?format=json`)
       .then(res => res.json())
       .then(({ id, duration, questions, num_questions }) => {
         this.questions = questions

@@ -5,7 +5,7 @@ from examination.models import Examination
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    account_type = models.CharField(max_length=10, choices=(
+    account_type = models.IntegerField(choices=(
         (1, 'Examiner'),
         (2, 'Student')
     ))
