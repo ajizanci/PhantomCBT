@@ -36,7 +36,7 @@ class Examination(models.Model):
         score = 0
         for answer in answers:
             question = Question.objects.get(pk=answer["question_id"])
-            correct_option = Option.objects.get(question=question, is_correct=True)
+            correct_option = question.correct_option
             if answer["selected_option"] == correct_option.id:
                 score += 1
         
@@ -44,18 +44,6 @@ class Examination(models.Model):
     
     def __str__(self):
         return self.name
-
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    account_type = models.CharField(choices=(
-        (1, 'Examiner'),
-        (2, 'Student')
-    ))
-    examination = models.ForeignKey(Examination, on_delete=models.CASCADE, related_name="students", blank=True, null=True)
-
-class Score(models.Model):
-    student = models.OneToOneField(User, on_delete=models.CASCADE)
-    score = models.DecimalField(decimal_places=2, max_digits=5)
 
 class Question(models.Model):
     examination = models.ForeignKey(Examination, on_delete=models.CASCADE, related_name='questions')

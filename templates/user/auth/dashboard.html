@@ -18,13 +18,13 @@
             </p>
         </div>
         <div class="controls">
-            <a href="{% url 'user:students' %}?examination={{ exam.id }}" class="button red">View Students</a>
-            <a href="{% url 'user:questions' %}?examination={{ exam.id }}"class="button blue">View Questions</a>
+            <a href="{% url 'examiner:students' %}?examination={{ exam.id }}" class="button red">View Students</a>
+            <a href="{% url 'examiner:questions' %}?examination={{ exam.id }}"class="button blue">View Questions</a>
         </div>
     </div>
 {% endfor %}
     <div class="exam card" id="create-exam">
-        <a href="{% url 'user:add' %}" class="block button">
+        <a href="{% url 'examiner:add' %}" class="block button">
     Add Examination</a>
     </div>
 </div>

@@ -10,7 +10,7 @@
   <body>
     <div class="center-container">
       <div class="form-container card">
-        <form action="{% url 'user:register' %}" method="POST">
+        <form action="{% url 'examiner:register' %}" method="POST">
           {% csrf_token %} {{ form }}
           <button style="width: 100%;" class="button red block" type="submit">Register</button>
         </form>

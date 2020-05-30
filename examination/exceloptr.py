@@ -1,13 +1,15 @@
 import openpyxl
-from .models import Student, Question, Option
+from django.contrib.auth.models import User
+from user.models import Profile
+from .models import Question, Option
 from random import randint
 
 
 def generate_unique_id():
     uid = randint(100000, 999999)
     try:
-        existing_student = Student.objects.get(unique_id=uid)
-    except Student.DoesNotExist:
+        existing_student = Profile.objects.get(unique_id=uid)
+    except Profile.DoesNotExist:
         return uid
 
     return generate_unique_id()
@@ -15,12 +17,9 @@ def generate_unique_id():
 
 def create_questions(workbook, exam):
     questions = None
-    try:
-        wb = openpyxl.load_workbook(workbook)
-        sheet = wb.get_sheet_by_name("Questions")
-        questions = get_questions_from_sheet(sheet)
-    except:
-        return False
+    wb = openpyxl.load_workbook(workbook)
+    sheet = wb.get_sheet_by_name("Questions")
+    questions = get_questions_from_sheet(sheet)
 
     for question in questions:
         q = Question.objects.create(
@@ -42,11 +41,9 @@ def create_students(workbook, exam):
         return False
 
     for student in students:
-        Student.objects.create(
-            examination=exam,
-            unique_id=generate_unique_id(),
-            first_name=student["first_name"],
-            last_name=student["last_name"])
+        uid = generate_unique_id()
+        st = User.objects.create_user(username=f"{student['first_name']}{uid}", first_name=student["first_name"], last_name=student["last_name"])
+        Profile.objects.create(user=st, account_type=2, unique_id=uid, examination=exam)
 
     return True
 
@@ -66,7 +63,8 @@ def get_questions_from_sheet(sheet):
     for row in range(2, sheet.max_row + 1):
         content = sheet["A" + str(row)].value
         options = map(lambda x: x.strip(), sheet["B" + str(row)].value.split(","))
-        correct_option = sheet["C" + str(row)].value
+        correct_option = str(sheet["C" + str(row)].value).strip()
+        print(correct_option)
         questions.append({
             'content': content,
             'options': options,

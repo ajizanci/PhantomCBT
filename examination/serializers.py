@@ -4,7 +4,7 @@ from .models import Examination, Question, Option
 
 class AnswerSerializer(serializers.Serializer):
     question_id = serializers.IntegerField()
-    selected_option = serializers.IntegerField()
+    selected_option = serializers.IntegerField(allow_null=True, required=False, default=None)
     
 
 class AnswerSheetSerializer(serializers.Serializer):

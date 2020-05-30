@@ -18,10 +18,10 @@
         <tr>
           <td>{{ student.first_name }}</td>
           <td>{{ student.last_name }}</td>
-          <td>{{ student.unique_id }}</td>
+          <td>{{ student.profile.unique_id }}</td>
           <td>
-            {% if student.score %}
-              {{ student.score }}
+            {% if student.profile.score %}
+              {{ student.profile.score }}
             {% else %}
               <span>No score yet</span>
             {% endif %}

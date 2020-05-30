@@ -8,7 +8,8 @@ import os
 import cbt.settings as settings
 from .forms import LoginForm, RegisterForm
 from examination.exceloptr import create_students, create_questions
-from examination.models import Examination, Profile, Question, Student, Option
+from examination.models import Examination, Question, Option
+from .models import Profile
 # Create your views here.
 def index(request):
     return render(request, 'user/index.html')
@@ -25,7 +26,7 @@ class Register(View):
                     user = User.objects.create_user(rform.cleaned_data["username"], password=rform.cleaned_data["password"])
                     Profile.objects.create(user=user, account_type='Examiner')
                     login(request, user)
-                    return HttpResponseRedirect(reverse("user:dashboard", kwargs={'username': user.username}))
+                    return HttpResponseRedirect(reverse("examiner:dashboard", kwargs={'username': user.username}))
                 
                 except:
                     rform.add_error(field="username", error="Username is already taken.")
@@ -46,7 +47,7 @@ class Login(View):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return HttpResponseRedirect(reverse("user:dashboard", kwargs={'username': user.username}))
+                return HttpResponseRedirect(reverse("examiner:dashboard", kwargs={'username': user.username}))
             else:
                 lform.add_error(field=None, error="Invalid login credentials")
                 
@@ -79,14 +80,12 @@ class AddExamination(View):
                     dest.write(chunk)
             
             if (create_questions(file_path, exam) and create_students(file_path, exam)):
-                return HttpResponseRedirect(reverse("user:dashboard", kwargs={'username': request.user.username}))
-
-            else:
-                exam.delete()
+                return HttpResponseRedirect(reverse("examiner:dashboard", kwargs={'username': request.user.username}))
 
         except:
-            exam.delete()
-
+            pass
+        
+        exam.delete()
         return render(request, 'user/auth/add-exam.html', {'errors': ['An error occured while processing the workbook']})
 
 class ExaminationsListView(ListView):
@@ -102,7 +101,9 @@ class StudentsListView(ListView):
     
     def get_queryset(self):
         self.examination = get_object_or_404(Examination, examiner=self.request.user, id=int(self.request.GET["examination"]))
-        return Student.objects.filter(examination=self.examination)
+        query = Profile.objects.filter(account_type=2, examination=self.examination)
+        
+        return map(lambda x: x.user, query)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -124,5 +125,5 @@ class QuestionsListView(ListView):
     
 def logoutu(request):
     logout(request)
-    return HttpResponseRedirect(reverse("user:login"))
+    return HttpResponseRedirect(reverse("examiner:login"))
     
