@@ -45,15 +45,17 @@ class Examination(models.Model):
     def __str__(self):
         return self.name
 
-class Student(models.Model):
-    examination = models.ForeignKey(Examination, on_delete=models.CASCADE, related_name='students')
-    first_name = models.CharField(max_length=25)
-    last_name = models.CharField(max_length=25)
-    unique_id = models.IntegerField()
-    score = models.DecimalField(null=True, decimal_places=2, max_digits=5, blank=True)
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    account_type = models.CharField(choices=(
+        (1, 'Examiner'),
+        (2, 'Student')
+    ))
+    examination = models.ForeignKey(Examination, on_delete=models.CASCADE, related_name="students", blank=True, null=True)
 
-    def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+class Score(models.Model):
+    student = models.OneToOneField(User, on_delete=models.CASCADE)
+    score = models.DecimalField(decimal_places=2, max_digits=5)
 
 class Question(models.Model):
     examination = models.ForeignKey(Examination, on_delete=models.CASCADE, related_name='questions')

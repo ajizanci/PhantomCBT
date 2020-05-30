@@ -8,7 +8,7 @@ import os
 import cbt.settings as settings
 from .forms import LoginForm, RegisterForm
 from examination.exceloptr import create_students, create_questions
-from examination.models import Examination, Question, Student, Option
+from examination.models import Examination, Profile, Question, Student, Option
 # Create your views here.
 def index(request):
     return render(request, 'user/index.html')
@@ -23,6 +23,7 @@ class Register(View):
             if rform.cleaned_data["password"] == rform.cleaned_data["confirm_password"]:
                 try:
                     user = User.objects.create_user(rform.cleaned_data["username"], password=rform.cleaned_data["password"])
+                    Profile.objects.create(user=user, account_type='Examiner')
                     login(request, user)
                     return HttpResponseRedirect(reverse("user:dashboard", kwargs={'username': user.username}))
                 
@@ -69,7 +70,8 @@ class AddExamination(View):
             set_date=date,
             num_questions=num_questions)
         
-        file_path = os.path.join(settings.STATIC_ROOT, f"{request.user.username}.xlsx")
+        #file_path = os.path.join(settings.STATIC_ROOT, f"{request.user.username}.xlsx")
+        file_path = f"./static/upfiles/{request.user.username}.xlsx"
         
         try:
             with open(file_path, 'wb+') as dest:
@@ -79,9 +81,13 @@ class AddExamination(View):
             if (create_questions(file_path, exam) and create_students(file_path, exam)):
                 return HttpResponseRedirect(reverse("user:dashboard", kwargs={'username': request.user.username}))
 
+            else:
+                exam.delete()
+
         except:
             exam.delete()
-            return render(request, 'user/auth/add-exam.html', {'errors': ['An error occured while processing the workbook']})
+
+        return render(request, 'user/auth/add-exam.html', {'errors': ['An error occured while processing the workbook']})
 
 class ExaminationsListView(ListView):
     template_name = 'user/auth/dashboard.html'
