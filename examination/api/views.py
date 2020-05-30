@@ -27,6 +27,7 @@ def create_students(request):
                     uid = generate_unique_id()
                     st = User.objects.create_user(username=f"{student['first_name']}{uid}", **student)
                     Profile.objects.create(user=st, examination=exam, account_type=2, unique_id=uid)
+                    Token.objects.create(user=st)
                     resp.append({ **student, 'unique_id': uid })
                 
                 return Response(resp)
@@ -37,7 +38,17 @@ def create_students(request):
             return Response({'response': 'Invalid request format.', 'errors': serializer.errors})
         
     return Response({'response': 'You do not have permission to perform this action.'})
-            
+
+@api_view(["POST"])
+def examination_login(request, id):
+    uid = request.POST['unique_id']
+    try:
+        student_profile = Profile.objects.get(unique_id=uid, examination__id=id)
+        t = Token.objects.get(user=student_profile.user)
+        return Response({ 'token': t.key })
+    
+    except User.DoesNotExist:
+        return Response({ 'response': 'Invalid credentials' })
 
 class QuestionsView(generics.RetrieveAPIView):
     queryset = Examination.objects.all()
