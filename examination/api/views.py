@@ -1,7 +1,6 @@
 from rest_framework import generics
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
@@ -11,7 +10,6 @@ from examination.exceloptr import generate_unique_id
 from .serializers import ExamSerializer, AnswerSheetSerializer, AddStudentsSerializer
 
 @api_view(['POST'])
-@authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def create_students(request):
     if request.user.profile.account_type == 1:
@@ -55,7 +53,6 @@ class QuestionsView(generics.RetrieveAPIView):
     serializer_class = ExamSerializer
     
 @api_view(['POST'])
-@authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def submit_exam_view(request):
     if request.method == 'POST':
