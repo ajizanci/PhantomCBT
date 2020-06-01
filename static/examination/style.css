@@ -120,3 +120,6 @@ li.option .option-s {
   justify-content: center;
   flex-direction: column;
 }
+.goto-tile.selected {
+  background-color: yellow;
+}

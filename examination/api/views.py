@@ -69,3 +69,4 @@ def submit_exam_view(request):
             return Response({'success': True})    
         
         return Response({'success': False, 'err': serializer.errors})  
+        
