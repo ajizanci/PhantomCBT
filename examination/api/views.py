@@ -45,7 +45,7 @@ def examination_login(request, id):
         t = Token.objects.get(user=student_profile.user)
         return Response({ 'token': t.key })
     
-    except User.DoesNotExist:
+    except Profile.DoesNotExist:
         return Response({ 'response': 'Invalid credentials' })
 
 class QuestionsView(generics.RetrieveAPIView):
