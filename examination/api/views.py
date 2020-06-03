@@ -1,13 +1,14 @@
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
+from rest_framework.pagination import PageNumberPagination
 from django.contrib.auth.models import User
 from examination.models import Examination
 from user.models import Profile
 from examination.exceloptr import generate_unique_id
-from .serializers import ExamSerializer, AnswerSheetSerializer, AddStudentsSerializer
+from .serializers import ExamSerializer, QuestionSerializer, AnswerSheetSerializer, AddStudentsSerializer, StudentSerializer
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -16,9 +17,14 @@ def create_students(request):
         serializer = AddStudentsSerializer(data=request.data)
         if serializer.is_valid():
             try:
-                exam = Examination.objects.get(pk=int(serializer.validated_data['examination_id']))
+                exam = Examination.objects.get(
+                    pk=int(serializer.validated_data['examination_id'])
+                )
                 if exam.examiner.id != request.user.id:
-                    return Response({'response': 'You do not have permission to perform this action.'})                
+                    return Response(
+                        {'response': 'You do not have permission to perform this action.'},
+                        status=status.HTTP_403_FORBIDDEN
+                    )                
 
                 resp = []
                 for student in serializer.validated_data["students"]:
@@ -31,11 +37,20 @@ def create_students(request):
                 return Response(resp)
                     
             except Examination.DoesNotExist:
-                return Response({'response': 'Examination with provided id does not exist.'})
+                return Response(
+                    {'response': 'Examination with provided id does not exist.'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
         else:
-            return Response({'response': 'Invalid request format.', 'errors': serializer.errors})
+            return Response(
+                {'response': 'Invalid request format.', 'errors': serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
-    return Response({'response': 'You do not have permission to perform this action.'})
+    return Response(
+        {'response': 'You do not have permission to perform this action.'},
+        status=status.HTTP_403_FORBIDDEN
+    )
 
 @api_view(["POST"])
 def examination_login(request, id):
@@ -46,11 +61,28 @@ def examination_login(request, id):
         return Response({ 'token': t.key })
     
     except Profile.DoesNotExist:
-        return Response({ 'response': 'Invalid credentials' })
+        return Response({ 'response': 'Invalid credentials' }, status=status.HTTP_404_NOT_FOUND)
 
-class QuestionsView(generics.RetrieveAPIView):
-    queryset = Examination.objects.all()
-    serializer_class = ExamSerializer
+class StudentsListView(generics.ListAPIView):
+    serializer_class = StudentSerializer
+    pagination_class = PageNumberPagination
+    
+    def get_queryset(self):
+        examination_id = self.kwargs['pk']
+        try:
+            student_profiles = Profile.objects.filter(examination__id=examination_id)
+        except Profile.DoesNotExist:
+            return Response({'response': 'No examination with pr'}, status=status.HTTP_404_NOT_FOUND)
+        
+        return map(lambda profile: profile.user, student_profiles)
+
+class QuestionsListView(generics.RetrieveAPIView):
+    serializer_class = QuestionSerializer
+    pagination_class = PageNumberPagination
+
+    def get_queryset(self):
+        examination_id = self.kwargs['pk']
+        pass
     
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -63,7 +95,8 @@ def submit_exam_view(request):
             student = User.objects.get(id=int(serializer.validated_data["student_id"]))
             student.profile.score = score
             student.profile.save()
+            
             return Response({'success': True})    
         
-        return Response({'success': False, 'err': serializer.errors})  
+        return Response({'success': False, 'err': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)  
         
